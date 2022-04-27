@@ -1,0 +1,99 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    command: python linker/manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - celery
+      - db
+      - redis
+    environment:
+      POSTGRES_HOST: db
+    env_file:
+      - sentry.env
+      - local.env
+    volumes:
+      - ./linker:/backend/linker
+    ports:
+      - "8000:8000"
+    container_name: linker_backend_web
+
+  redis:
+    image: redis:alpine
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: linker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: pg_isready -U postgres
+      timeout: 20s
+      retries: 3
+    container_name: linker_backend_db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  pg_admin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_LISTEN_PORT: 5050
+    ports:
+      - "5050:5050"
+    restart: unless-stopped
+    container_name: linker_backend_pg_admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    logging:
+      driver: none
+    depends_on:
+      - db
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    command: celery --workdir linker -A core.celery_app worker -l info
+    environment:
+      POSTGRES_HOST: db
+    volumes:
+      - ./linker:/backend/linker
+    depends_on:
+      - redis
+      - db
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    command: celery --workdir linker -A core.celery_app beat -l info
+    environment:
+      POSTGRES_HOST: db
+    volumes:
+      - ./linker:/backend/linker
+    depends_on:
+      - redis
+      - db
+
+  flower:
+    image: mher/flower:latest
+    command: celery flower --address=0.0.0.0 --port=5555
+    environment:
+      CELERY_BROKER: redis://redis
+    volumes:
+      - ./linker:/backend/linker
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery
+
+volumes:
+  db-data:
+  pgadmin-data:
