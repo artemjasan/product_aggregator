@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     command: python aggregator_project/manage.py runserver 0.0.0.0:8000
     depends_on:
+      - celery
       - db
       - redis
     environment:
@@ -52,6 +53,45 @@ services:
 
   redis:
     image: redis:alpine
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery --workdir aggregator_project -A core.celery_app worker -l info
+    environment:
+      POSTGRES_HOST: db
+    volumes:
+      - ./aggregator_project:/product_aggregator/aggregator_project
+    depends_on:
+      - redis
+      - db
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery --workdir aggregator_project -A core.celery_app beat -l info
+    environment:
+      POSTGRES_HOST: db
+    volumes:
+      - ./aggregator_project:/product_aggregator/aggregator_project
+    depends_on:
+      - redis
+      - db
+
+  flower:
+    image: mher/flower:latest
+    command: celery flower --address=0.0.0.0 --port=5555
+    environment:
+      CELERY_BROKER: redis://redis
+    volumes:
+      - ./aggregator_project:/product_aggregator/aggregator_project
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery
 
 volumes:
   db-data:

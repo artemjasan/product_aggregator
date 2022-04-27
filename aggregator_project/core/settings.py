@@ -113,3 +113,17 @@ BASE_OFFER_MICROSERVICE_API = os.getenv(
 MICROSERVICE_AUTH_PATH = "/auth"
 MICROSERVICE_REGISTRATION_PATH = "/products/register"
 
+# Celery project settings
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379")
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
+CELERY_BEAT_SCHEDULE = {
+    "delete_old_failed_temporary_links": {
+        "task": "product_app.tasks.delete_old_failed_temporary_links",
+        "schedule": 60.0,
+    },
+}
+
