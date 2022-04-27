@@ -3,7 +3,7 @@ FROM python:3.10
 ENV PYTHONUNBUFFERED=1
 ENV DEBUG=1
 
-WORKDIR /backend
+WORKDIR /product_aggregator
 
 COPY pyproject.toml poetry.lock ./
 

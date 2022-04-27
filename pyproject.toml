@@ -9,6 +9,10 @@ python = "^3.10"
 Django = "^4.0.4"
 djangorestframework = "^3.13.1"
 celery = "^5.2.6"
+requests = "^2.27.1"
+signals = "^0.0.2"
+psycopg2 = "^2.9.3"
+django-redis = "^5.2.0"
 
 [tool.poetry.dev-dependencies]
 
