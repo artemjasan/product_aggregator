@@ -13,12 +13,13 @@ class Product(models.Model):
 
 
 class Offer(models.Model):
+    external_ms_id = models.IntegerField(null=True)
     price = models.PositiveIntegerField()
     items_in_stock = models.PositiveIntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.price.__str__() + self.items_in_stock.__str__()
+        return str(self.external_ms_id)
 
     class Meta:
         ordering = ["-id"]

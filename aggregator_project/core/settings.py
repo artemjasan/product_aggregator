@@ -32,9 +32,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -112,7 +110,7 @@ BASE_OFFER_MICROSERVICE_API = os.getenv(
 )
 MICROSERVICE_AUTH_PATH = "/auth"
 MICROSERVICE_REGISTRATION_PATH = "/products/register"
-
+MICROSERVICE_GET_PRODUCT_OFFERS_PATH = "/offers"
 # Celery project settings
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379")
@@ -121,8 +119,8 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
 CELERY_BEAT_SCHEDULE = {
-    "delete_old_failed_temporary_links": {
-        "task": "product_app.tasks.delete_old_failed_temporary_links",
+    "create_or_update_product_offers": {
+        "task": "product_app.tasks.create_or_update_product_offers",
         "schedule": 60.0,
     },
 }

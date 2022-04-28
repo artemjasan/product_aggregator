@@ -2,13 +2,18 @@ import logging
 
 from celery import shared_task
 
-logger = logging.getLogger("product_tasks")
+from .services import offer_services, product_services
+
+logger = logging.getLogger("background_tasks")
 
 
 @shared_task
-def delete_old_failed_temporary_links() -> None:
+def create_or_update_product_offers() -> None:
     """
     Celery shared task which schedule deletes failed old temporary links.
     """
-    logger.info("Starting create and validate links")
-    print("This is schedule task")
+    logger.info("Starting the background task")
+    if product_services.checking_for_product_existence():
+        logger.info("Starting create or update product's offers")
+        offer_services.create_or_update_product_offers()
+

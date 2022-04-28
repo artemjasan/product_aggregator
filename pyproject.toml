@@ -13,6 +13,7 @@ requests = "^2.27.1"
 signals = "^0.0.2"
 psycopg2 = "^2.9.3"
 django-redis = "^5.2.0"
+pymemcache = "^3.5.2"
 
 [tool.poetry.dev-dependencies]
 

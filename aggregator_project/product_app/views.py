@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from .models import Product, Offer
 from .serializers import OfferSerializer, ProductSerializer
-from .services import product_services
+from .services import product_services, token_services
 
 
 class OffersViewSet(viewsets.ReadOnlyModelViewSet):
@@ -20,6 +20,11 @@ class ProductsViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+
+        if not token_services.token_existence_verification():
+            token = token_services.load_access_token_from_offers_microservice()
+            token_services.store_access_token(token)
+
         response = product_services.product_registration(serializer.data["id"])
         if response.status_code == status.HTTP_400_BAD_REQUEST:
             return Response(response.json(), status=response.status_code)

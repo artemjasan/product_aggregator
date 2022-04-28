@@ -14,10 +14,9 @@ def product_registration(product_id: int) -> Response:
     """
     TODO: description
     :param product_id: id of the created product
-    :return:
+    :return: Response
     """
     created_product = Product.objects.get(id=product_id)
-    print(created_product.id, created_product.name, created_product.description)
     try:
         response = post(
             url=settings.BASE_OFFER_MICROSERVICE_API + settings.MICROSERVICE_REGISTRATION_PATH,
@@ -31,3 +30,14 @@ def product_registration(product_id: int) -> Response:
     # TODO: write correct way to except error if microservice doesn't work
     except HTTPError as error:
         raise error
+
+
+def checking_for_product_existence():
+    """
+    Product service which checks product existence,
+    :return: True if at least one product exists, otherwise False.
+    """
+    if Product.objects.all().count() > 0:
+        return True
+    return False
+
