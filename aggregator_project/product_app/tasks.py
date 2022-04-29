@@ -10,7 +10,7 @@ logger = logging.getLogger("background_tasks")
 @shared_task
 def create_or_update_product_offers() -> None:
     """
-    Celery shared task which schedule deletes failed old temporary links.
+    Celery shared task which schedule deletes old product offers.
     """
     logger.info("Starting the background task")
     if product_services.checking_for_product_existence():
