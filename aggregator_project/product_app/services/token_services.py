@@ -29,10 +29,10 @@ def store_access_token(token: str) -> None:
 
 def get_access_token() -> Optional[OffersMicroserviceToken]:
     """
-    Token service, which allows to get first instance if possible, otherwise return None
-    :return: None or first instance
+    Token service, which allows to get last instance if possible, otherwise return None
+    :return: None or last instance
     """
-    return OffersMicroserviceToken.objects.first()
+    return OffersMicroserviceToken.objects.last()
 
 
 def load_access_token_from_offers_microservice() -> str:

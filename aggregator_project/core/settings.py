@@ -26,7 +26,6 @@ INSTALLED_APPS = [
 
     # 3rd part applications
     'rest_framework',
-    'celery',
 ]
 
 MIDDLEWARE = [
@@ -112,8 +111,8 @@ MICROSERVICE_AUTH_PATH = "/auth"
 MICROSERVICE_REGISTRATION_PATH = "/products/register"
 MICROSERVICE_GET_PRODUCT_OFFERS_PATH = "/offers"
 # Celery project settings
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379")
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379")
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"

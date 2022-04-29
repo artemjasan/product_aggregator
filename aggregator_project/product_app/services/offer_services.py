@@ -51,7 +51,6 @@ def create_or_update_product_offers():
 
     for product in products:
         product_offers = get_product_offers(product.id).json()
-        logger.info(f"{product_offers}")
         product_offers_ids = []
         for product_offer in product_offers:
 
@@ -62,11 +61,10 @@ def create_or_update_product_offers():
                     items_in_stock=product_offer.get("items_in_stock"),
                     product=product,
                 )
-                product_offers_ids.append(product_offer.get("id"))
 
-                # Delete not created and not updated product offers
-                Offer.objects.filter(product=product.id).exclude(external_ms_id__in=product_offers_ids).delete()
-
+            product_offers_ids.append(product_offer.get("id"))
+        # Delete not created and not updated product offers
+        Offer.objects.filter(product=product.id).exclude(external_ms_id__in=product_offers_ids).delete()
 
 
 

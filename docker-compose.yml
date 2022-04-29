@@ -5,11 +5,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python aggregator_project/manage.py runserver 0.0.0.0:8000
+    command:  sh -c "python aggregator_project/manage.py migrate 
+                     && python aggregator_project/manage.py get_token 
+                     && python aggregator_project/manage.py runserver 0.0.0.0:8000"
     depends_on:
       - celery
+      - celery-beat
       - db
-      - redis
     environment:
       POSTGRES_HOST: db
     env_file:
