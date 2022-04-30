@@ -5,12 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command:  sh -c "python aggregator_project/manage.py migrate 
-                     && python aggregator_project/manage.py get_token 
-                     && python aggregator_project/manage.py runserver 0.0.0.0:8000"
+    command: ./entrypoint.sh
     depends_on:
       - celery
-      - celery-beat
       - db
     environment:
       POSTGRES_HOST: db
@@ -60,20 +57,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery --workdir aggregator_project -A core.celery_app worker -l info
-    environment:
-      POSTGRES_HOST: db
-    volumes:
-      - ./aggregator_project:/product_aggregator/aggregator_project
-    depends_on:
-      - redis
-      - db
-
-  celery-beat:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: celery --workdir aggregator_project -A core.celery_app beat -l info
+    command: celery --workdir aggregator_project -A core.celery_app worker -B -l info
     environment:
       POSTGRES_HOST: db
     volumes:

@@ -13,3 +13,4 @@ RUN poetry export --dev --without-hashes --no-interaction --no-ansi -f requireme
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+RUN chmod +x  entrypoint.sh
