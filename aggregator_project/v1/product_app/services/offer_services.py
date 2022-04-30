@@ -8,8 +8,10 @@ from django.db import transaction
 from rest_framework import status
 
 from .token_services import get_offers_microservice_header
-from ..custom_exceptions import WrongOffersMicroserviceResponseStatus, ClientErrorOffersMicroserviceResponseStatus
-from ..models import Product, Offer
+from v1.product_app.custom_exceptions import (
+    WrongOffersMicroserviceResponseStatus, ClientErrorOffersMicroserviceResponseStatus
+)
+from v1.product_app.models import Product, Offer
 
 logger = logging.getLogger("offers_services")
 
@@ -53,7 +55,6 @@ def create_or_update_product_offers():
         product_offers = get_product_offers(product.id).json()
         product_offers_ids = []
         for product_offer in product_offers:
-
             with transaction.atomic():
                 Offer.objects.update_or_create(
                     external_ms_id=product_offer.get("id"),
@@ -65,8 +66,3 @@ def create_or_update_product_offers():
             product_offers_ids.append(product_offer.get("id"))
         # Delete not created and not updated product offers
         Offer.objects.filter(product=product.id).exclude(external_ms_id__in=product_offers_ids).delete()
-
-
-
-
-

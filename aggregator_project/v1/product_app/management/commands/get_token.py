@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from product_app.services import token_services
+from v1.product_app.services import token_services
 
 
 class Command(BaseCommand):

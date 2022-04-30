@@ -23,7 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Inner applications
-    'product_app.apps.ProductAppConfig',
+    'v1.product_app.apps.ProductAppConfig',
 
     # 3rd part applications
     'rest_framework',
@@ -143,7 +143,7 @@ CELERY_RESULT_SERIALIZER = "json"
 
 CELERY_BEAT_SCHEDULE = {
     "create_or_update_product_offers": {
-        "task": "product_app.tasks.create_or_update_product_offers",
+        "task": "v1.product_app.tasks.create_or_update_product_offers",
         "schedule": 60.0,
     },
 }
@@ -153,12 +153,10 @@ CELERY_BEAT_SCHEDULE = {
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = "aggregator-auth"
 JWT_AUTH_REFRESH_COOKIE = "aggregator-refresh-token"
-# TODO: This should probably be changed later as debug-dependant variable.
-#   for now its OK that it is disabled
+# For now its OK that it is disabled
 ACCOUNT_EMAIL_VERIFICATION = "none"
-# TODO: this should probably be set to True in the future:
-#   JWT_AUTH_SECURE - If you want the cookie to be only sent to the server
-#   when a request is made with the https scheme (default: False).
+# JWT_AUTH_SECURE - If you want the cookie to be only sent to the server
+# when a request is made with the https scheme (default: False).
 JWT_AUTH_SECURE = False
 # Every time user refreshes their token, new refresh-token is provided
 SIMPLE_JWT = {"REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=30), "ROTATE_REFRESH_TOKENS": True}

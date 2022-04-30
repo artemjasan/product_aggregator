@@ -5,8 +5,8 @@ from urllib.error import HTTPError
 from django.conf import settings
 from rest_framework import status
 
-from ..models import OffersMicroserviceToken
-from ..custom_exceptions import WrongOffersMicroserviceResponseStatus
+from v1.product_app.models import OffersMicroserviceToken
+from v1.product_app.custom_exceptions import WrongOffersMicroserviceResponseStatus
 
 
 def token_existence_verification() -> bool:

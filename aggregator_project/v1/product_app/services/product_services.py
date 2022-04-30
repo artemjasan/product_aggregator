@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from .token_services import get_offers_microservice_header
-from ..models import Product
+from v1.product_app.models import Product
 
 
 def product_registration(product_id: int) -> Response:
