@@ -1,20 +1,34 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Product, Offer
-from .serializers import OfferSerializer, ProductSerializer
+from .serializers import OfferSerializer, ProductListSerializer, ProductDetailSerializer
 from .services import product_services
 
 
 class OffersViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ProductsViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    queryset = Product.offered_objects.all()
+    serializer_class = ProductListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self) -> serializers.ModelSerializer:
+        return self.action_serializer_class_mapping.get(self.action, super().get_serializer_class())
+
+    action_serializer_class_mapping = {
+        "create": ProductListSerializer,
+        "retrieve": ProductDetailSerializer,
+        "update": ProductDetailSerializer,
+        "partial_update": ProductDetailSerializer,
+        "destroy": ProductDetailSerializer,
+    }
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

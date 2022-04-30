@@ -9,7 +9,19 @@ class OfferSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductListSerializer(serializers.ModelSerializer):
+
+    offers = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = ["id", "name", "description", "offers"]
+
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+
+    offers = OfferSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ["id", "name", "description", "offers"]

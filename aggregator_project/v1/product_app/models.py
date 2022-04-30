@@ -1,9 +1,21 @@
 from django.db import models
 
 
+class ProductManager(models.Manager):
+    """
+    Prefetches info about offers for selected products.
+    """
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("offers")
+
+
 class Product(models.Model):
     name = models.CharField(max_length=256, unique=True)
     description = models.TextField(max_length=512)
+
+    objects = models.Manager()
+    offered_objects = ProductManager()
 
     def __str__(self):
         return self.name
@@ -16,7 +28,7 @@ class Offer(models.Model):
     external_ms_id = models.IntegerField(null=True)
     price = models.PositiveIntegerField()
     items_in_stock = models.PositiveIntegerField()
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="offers")
 
     def __str__(self):
         return str(self.external_ms_id)
