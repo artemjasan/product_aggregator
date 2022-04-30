@@ -28,11 +28,6 @@ migrate:
 	docker-compose run --rm web python aggregator_project/manage.py migrate
 	docker-compose stop
 
-# Revert migration for given application
-revert:
-	docker-compose run --rm web python aggregator_project/manage.py migrate $(app) zero
-	docker-compose stop
-
 # Create migrations
 make-migrations:
 	docker-compose run --rm web python aggregator_project/manage.py makemigrations

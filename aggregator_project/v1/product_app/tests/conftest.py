@@ -1,29 +1,24 @@
-import os
-from typing import Protocol, TypedDict
-
-import django as django
 import pytest
+
+from pytest_factoryboy import register
+from typing import TypedDict
+
 from rest_framework.test import APIClient, APIRequestFactory
-
-from v1.product_app.tests import factories
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
-django.setup()
+from .factories import ProductFactory, UserFactory, OfferFactory
 
 
-class UserMaker(Protocol):
-    def __call__(self, is_registered: bool, is_staff: bool):
-        ...
+register(UserFactory)
+register(ProductFactory)
+register(OfferFactory)
 
 
 @pytest.fixture
-def create_user(user_factory: type[factories.UserFactory]) -> UserMaker:
+def create_user(user_factory: UserFactory):
     """
     Fixture, which provides a registered User, if is_registered is True.
     Otherwise, returns None.
     If is_staff is True, returns a User with admin permissions.
     """
-
     def make_user(is_registered: bool, is_staff: bool):
         if not is_registered:
             return None
@@ -43,7 +38,7 @@ def api_request_factory() -> APIRequestFactory:
 
 
 @pytest.fixture
-def configured_api_client(request, create_user: UserMaker, api_client: APIClient) -> APIClient:
+def configured_api_client(request, create_user, api_client: APIClient) -> APIClient:
     """
     Fixture, which returns a DRF APIClient, which takes two bool parameters, provided in a request.param
         by a "parametrize" decorator.
@@ -55,13 +50,13 @@ def configured_api_client(request, create_user: UserMaker, api_client: APIClient
 
 
 @pytest.fixture
-def registered_api_client(create_user: UserMaker, api_client: APIClient) -> APIClient:
+def registered_api_client(create_user, api_client: APIClient) -> APIClient:
     api_client.force_authenticate(user=create_user(is_registered=True, is_staff=False))
     return api_client
 
 
 @pytest.fixture
-def staff_api_client(create_user: UserMaker, api_client: APIClient) -> APIClient:
+def staff_api_client(create_user, api_client: APIClient) -> APIClient:
     api_client.force_authenticate(user=create_user(is_registered=True, is_staff=True))
     return api_client
 
