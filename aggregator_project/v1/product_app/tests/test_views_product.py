@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from .conftest import try_all_authentications_with_codes
-from .factories import ProductFactory, OfferFactory
+from .factories import ProductFactory
 
 PRODUCT_DATA: Final = {
     "name": "MacBook Air",
@@ -150,68 +150,3 @@ def test_delete_product(
         response = registered_api_client.delete(reverse("product-detail", args=[product.id]))
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(**try_all_authentications_with_codes(401, 200, 200))
-def test_get_offers_list_different_auths_status_code(
-        offer_factory: OfferFactory,
-        configured_api_client: APIClient,
-        status_code: int
-):
-    offer_factory.create_batch(2)
-    response = configured_api_client.get(reverse("offer-list"))
-
-    assert response.status_code == status_code
-
-
-# @pytest.mark.django_db
-# def test_get_product_list(
-#         offer_factory: OfferFactory,
-#         product_factory: ProductFactory,
-#         registered_api_client: APIClient,
-# ):
-#     product = product_factory.create()
-#     offer = offer_factory.create(product=product)
-#     response = registered_api_client.get(reverse("offer-list"))
-#     results = response.data["results"]
-#
-#     assert response.status_code == status.HTTP_200_OK
-#     assert len(results) == 2
-#     for offers in results:
-#         assert "id" in offer
-#         assert "external_ms_id" in offer
-#         assert "price" in offer
-#         assert "items_in_stock" in offer
-#         assert "product" in offer
-
-
-#
-# @pytest.mark.django_db
-# def test_update_exists_offer(
-#         registered_api_client: APIClient,
-#         offer_factory: OfferFactory,
-#         product_factory: ProductFactory
-# ):
-#     product = product_factory.create()
-#     offer = offer_factory.create()
-#     response = registered_api_client.put(
-#         reverse("offer-detail", args=[offer.id]),
-#         data={
-#             "external_ms_id": 100,
-#             "price": 999,
-#             "items_in_stock": 0,
-#             "product": product.id
-#         }
-#     )
-#     assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
-#
-#
-# @pytest.mark.django_db
-# def test_update_exists_offer(
-#         registered_api_client: APIClient,
-#         offer_factory: OfferFactory
-# ):
-#     offer = offer_factory.create()
-#     response = registered_api_client.delete(reverse("offer-detail", args=[offer.id]))
-#     assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
