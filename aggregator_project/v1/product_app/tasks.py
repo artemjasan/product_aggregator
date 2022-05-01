@@ -15,5 +15,5 @@ def create_or_update_product_offers() -> None:
     logger.info("Starting the background task")
     if product_services.checking_for_product_existence():
         logger.info("Starting create or update product's offers")
-        offer_services.create_or_update_product_offers()
+        offer_services.create_product_offers()
 

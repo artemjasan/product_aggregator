@@ -1,11 +1,3 @@
-.PHONY: all build up migrate build-up build-migrate-up
-
-all: first-start
-
-# Run the full process of the first application start
-first-start: build create migrate up
-
-
 # Just build the application image
 build:
 	docker-compose build
@@ -22,23 +14,15 @@ up:
 # Shorthand to build and run the application without migration
 build-up: build up
 
-
 # Migrate the database
 migrate:
 	docker-compose run --rm web python aggregator_project/manage.py migrate
 	docker-compose stop
 
 # Create migrations
-make-migrations:
+makemigrations:
 	docker-compose run --rm web python aggregator_project/manage.py makemigrations
 	docker-compose stop
-
-# Shorthand to complete the full process of project startup
-build-migrate-up: build migrate up
-
-# Shorthand to complete the full process of project startup with creating migrations
-build-make-migrate-up: build make-migrations migrate up
-
 
 # Run the testing
 .PHONY: test
