@@ -1,28 +1,34 @@
-from urllib.error import HTTPError
-from requests import get
+import requests
 import logging
+from typing import Final
 
 from django.conf import settings
 from django.db import transaction
-
 from rest_framework import status
 
 from .token_services import get_offers_microservice_header
 from v1.product_app.custom_exceptions import (
-    WrongOffersMicroserviceResponseStatus, ClientErrorOffersMicroserviceResponseStatus
+    UnsupportedOffersMicroserviceResponseStatus, ErrorOffersMicroserviceResponseStatus
 )
 from v1.product_app.models import Product, Offer
 
 logger = logging.getLogger("offers_services")
 
+ERROR_RESPONSE_STATUS: Final = [status.HTTP_400_BAD_REQUEST, status.HTTP_401_UNAUTHORIZED, status.HTTP_404_NOT_FOUND]
 
-def get_product_offers(product_id: int):
+
+def get_product_offers(product_id: int) -> requests.Response:
     """
-    TODO: description
-    :return:
+    Offers service which provides to load product offers by using product id.
+    if response status code is 200, means that load was successful, and send
+    response with data.
+    If response status code is in ERROR_RESPONSE_STATUS, write log and raise
+    ErrorOffersMicroserviceResponseStatus custom exception.
+    In the event of a network problem raise ConnectionError exception;
+    :return: Response with data
     """
     try:
-        response = get(
+        response = requests.get(
             url=settings.BASE_OFFER_MICROSERVICE_API + f"/products/{product_id}" +
                 settings.MICROSERVICE_GET_PRODUCT_OFFERS_PATH,
             data={'id': product_id},
@@ -30,39 +36,35 @@ def get_product_offers(product_id: int):
         )
         if response.status_code == status.HTTP_200_OK:
             return response
-        elif response.status_code == status.HTTP_400_BAD_REQUEST:
-            logger.error(f"Status: 400 BAD REQUEST, {response.json()}")
-            raise ClientErrorOffersMicroserviceResponseStatus(response.status_code)
-        elif response.status_code == status.HTTP_401_UNAUTHORIZED:
-            logger.error(f"Status: 401 UNAUTHORIZED, {response.json()}")
-            raise ClientErrorOffersMicroserviceResponseStatus(response.status_code)
+        elif response.status_code in ERROR_RESPONSE_STATUS:
+            logger.error(f"Status: {response.status_code}, {response.json()}")
+            raise ErrorOffersMicroserviceResponseStatus(response.status_code)
         else:
             logger.error(f"Status: Incorrect MS status, {response.json()}")
-            raise WrongOffersMicroserviceResponseStatus(response.status_code)
-    # TODO: write correct way to except error if microservice doesn't work
-    except HTTPError as error:
-        raise error
+            raise UnsupportedOffersMicroserviceResponseStatus(response.status_code)
+    except requests.exceptions.ConnectionError:
+        raise requests.exceptions.ConnectionError("Failed to connect to Offers microservice!")
 
 
-def create_or_update_product_offers():
+def create_product_offers() -> None:
     """
-    TODO: description
-    :return:
+    Offers service which provides form Offers microservice to load product offers,
+    deletes previous instances and stores them in local db for each registered and stored product.
     """
     products = Product.objects.all()
 
     for product in products:
         product_offers = get_product_offers(product.id).json()
-        product_offers_ids = []
-        for product_offer in product_offers:
-            with transaction.atomic():
-                Offer.objects.update_or_create(
-                    external_ms_id=product_offer.get("id"),
-                    price=product_offer.get("price"),
-                    items_in_stock=product_offer.get("items_in_stock"),
-                    product=product,
-                )
-
-            product_offers_ids.append(product_offer.get("id"))
-        # Delete not created and not updated product offers
-        Offer.objects.filter(product=product.id).exclude(external_ms_id__in=product_offers_ids).delete()
+        Offer.objects.filter(product=product.id).delete()
+        with transaction.atomic():
+            Offer.objects.bulk_create(
+                [
+                    Offer.objects.create(
+                        external_ms_id=product_offer.get("id"),
+                        price=product_offer.get("price"),
+                        items_in_stock=product_offer.get("items_in_stock"),
+                        product=product,
+                    ) for product_offer in product_offers
+                ],
+                ignore_conflicts=True
+            )

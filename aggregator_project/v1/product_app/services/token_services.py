@@ -1,12 +1,11 @@
 from typing import Optional
-from requests import post
-from urllib.error import HTTPError
+import requests
 
 from django.conf import settings
 from rest_framework import status
 
 from v1.product_app.models import OffersMicroserviceToken
-from v1.product_app.custom_exceptions import WrongOffersMicroserviceResponseStatus
+from v1.product_app.custom_exceptions import UnsupportedOffersMicroserviceResponseStatus
 
 
 def token_existence_verification() -> bool:
@@ -43,17 +42,16 @@ def load_access_token_from_offers_microservice() -> str:
     :return: access token in str format
     """
     try:
-        response = post(
+        response = requests.post(
             url=settings.BASE_OFFER_MICROSERVICE_API + settings.MICROSERVICE_AUTH_PATH
         )
         if response.status_code == status.HTTP_201_CREATED:
             return response.json()["access_token"]
         else:
-            raise WrongOffersMicroserviceResponseStatus(response.status_code)
+            raise UnsupportedOffersMicroserviceResponseStatus(response.status_code)
 
-    # TODO: write correct way to except error if microservice doesn't work
-    except HTTPError as error:
-        raise error
+    except requests.exceptions.ConnectionError:
+        raise requests.exceptions.ConnectionError("Failed to connect to Offers microservice!")
 
 
 def get_offers_microservice_header():
