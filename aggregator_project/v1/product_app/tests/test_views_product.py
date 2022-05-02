@@ -1,7 +1,7 @@
-from unittest import mock
 from typing import Final
-import pytest
+from unittest import mock
 
+import pytest
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -9,22 +9,14 @@ from rest_framework.test import APIClient
 from .conftest import try_all_authentications_with_codes
 from .factories import ProductFactory
 
-PRODUCT_DATA: Final = {
-    "name": "MacBook Air",
-    "description": "some text"
-}
-UPDATED_PRODUCT_DATA: Final = {
-    "name": "MacBook Air 128 GB",
-    "description": "Some text about MacBook Air"
-}
+PRODUCT_DATA: Final = {"name": "MacBook Air", "description": "some text"}
+UPDATED_PRODUCT_DATA: Final = {"name": "MacBook Air 128 GB", "description": "Some text about MacBook Air"}
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(**try_all_authentications_with_codes(401, 200, 200))
 def test_get_product_list_different_auths_status_code(
-        product_factory: ProductFactory,
-        configured_api_client: APIClient,
-        status_code: int
+    product_factory: ProductFactory, configured_api_client: APIClient, status_code: int
 ):
     product_factory.create_batch(2)
     response = configured_api_client.get(reverse("product-list"))
@@ -34,8 +26,8 @@ def test_get_product_list_different_auths_status_code(
 
 @pytest.mark.django_db
 def test_get_product_list(
-        product_factory: ProductFactory,
-        registered_api_client: APIClient,
+    product_factory: ProductFactory,
+    registered_api_client: APIClient,
 ):
     product_factory.create_batch(2)
     response = registered_api_client.get(reverse("product-list"))
@@ -51,10 +43,7 @@ def test_get_product_list(
 
 
 @pytest.mark.django_db
-def test_get_new_product_max_limit(
-        registered_api_client: APIClient,
-        product_factory: ProductFactory
-):
+def test_get_new_product_max_limit(registered_api_client: APIClient, product_factory: ProductFactory):
     product_factory.create_batch(15)
     response = registered_api_client.get(reverse("product-list"))
 
@@ -63,10 +52,7 @@ def test_get_new_product_max_limit(
 
 
 @pytest.mark.django_db
-def test_get_product_detail(
-        registered_api_client: APIClient,
-        product_factory: ProductFactory
-):
+def test_get_product_detail(registered_api_client: APIClient, product_factory: ProductFactory):
     product = product_factory.create()
     response = registered_api_client.get(reverse("product-detail", args=[product.id]))
 
@@ -80,10 +66,7 @@ def test_get_product_detail(
 
 
 @pytest.mark.django_db
-def test_get_product_detail_non_existing(
-        registered_api_client: APIClient,
-        product_factory: ProductFactory
-):
+def test_get_product_detail_non_existing(registered_api_client: APIClient, product_factory: ProductFactory):
     product_factory.create()
     response = registered_api_client.get(reverse("product-detail", args=[123456789]))
 
@@ -92,10 +75,7 @@ def test_get_product_detail_non_existing(
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(**try_all_authentications_with_codes(401, 201, 201))
-def test_post_new_product_different_auths(
-        configured_api_client: APIClient,
-        status_code: int
-):
+def test_post_new_product_different_auths(configured_api_client: APIClient, status_code: int):
     with mock.patch("v1.product_app.services.product_services.product_registration"):
         response = configured_api_client.post(reverse("product-list"), data=PRODUCT_DATA)
 
@@ -104,7 +84,7 @@ def test_post_new_product_different_auths(
 
 @pytest.mark.django_db
 def test_post_new_post_without_description(
-        registered_api_client: APIClient,
+    registered_api_client: APIClient,
 ):
     with mock.patch("v1.product_app.services.product_services.product_registration"):
         response = registered_api_client.post(reverse("product-list"), data={"name": "Audi A4"})
@@ -114,7 +94,7 @@ def test_post_new_post_without_description(
 
 @pytest.mark.django_db
 def test_post_new_post_without_name(
-        registered_api_client: APIClient,
+    registered_api_client: APIClient,
 ):
     with mock.patch("v1.product_app.services.product_services.product_registration"):
         response = registered_api_client.post(reverse("product-list"), data={"description": "text"})
@@ -123,16 +103,10 @@ def test_post_new_post_without_name(
 
 
 @pytest.mark.django_db
-def test_update_exists_product(
-        registered_api_client: APIClient,
-        product_factory: ProductFactory
-):
+def test_update_exists_product(registered_api_client: APIClient, product_factory: ProductFactory):
     product = product_factory.create()
     with mock.patch("v1.product_app.services.product_services.product_registration"):
-        response = registered_api_client.put(
-            reverse("product-detail", args=[product.id]),
-            data=UPDATED_PRODUCT_DATA
-        )
+        response = registered_api_client.put(reverse("product-detail", args=[product.id]), data=UPDATED_PRODUCT_DATA)
     assert response.status_code == status.HTTP_200_OK
     data = response.data
 
@@ -141,10 +115,7 @@ def test_update_exists_product(
 
 
 @pytest.mark.django_db
-def test_delete_product(
-        registered_api_client: APIClient,
-        product_factory: ProductFactory
-):
+def test_delete_product(registered_api_client: APIClient, product_factory: ProductFactory):
     product = product_factory.create()
     with mock.patch("v1.product_app.services.product_services.product_registration"):
         response = registered_api_client.delete(reverse("product-detail", args=[product.id]))

@@ -1,5 +1,4 @@
-import requests
-
+import requests  # type: ignore
 from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
@@ -21,8 +20,8 @@ def product_registration(product_id: int) -> Response:
     try:
         response = requests.post(
             url=settings.BASE_OFFER_MICROSERVICE_API + settings.MICROSERVICE_REGISTRATION_PATH,
-            data={'id': created_product.id, 'name': created_product.name, 'description': created_product.description},
-            headers=get_offers_microservice_header()
+            data={"id": created_product.id, "name": created_product.name, "description": created_product.description},
+            headers=get_offers_microservice_header(),
         )
         if response.status_code != status.HTTP_201_CREATED:
             Product.objects.get(id=product_id).delete()
@@ -41,4 +40,3 @@ def checking_for_product_existence():
     if Product.objects.all().count() > 0:
         return True
     return False
-

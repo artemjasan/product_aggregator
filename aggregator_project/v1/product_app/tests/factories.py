@@ -1,9 +1,6 @@
 import factory
-
-from factory import fuzzy
 from django.contrib.auth import get_user_model
-
-from v1.product_app import models
+from factory import fuzzy
 
 
 class UserFactory(factory.django.DjangoModelFactory):

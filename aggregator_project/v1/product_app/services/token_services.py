@@ -1,11 +1,11 @@
 from typing import Optional
-import requests
 
+import requests  # type: ignore
 from django.conf import settings
 from rest_framework import status
 
-from v1.product_app.models import OffersMicroserviceToken
 from v1.product_app.custom_exceptions import UnsupportedOffersMicroserviceResponseStatus
+from v1.product_app.models import OffersMicroserviceToken
 
 
 def token_existence_verification() -> bool:
@@ -23,7 +23,7 @@ def store_access_token(token: str) -> None:
     :return: None
     """
     token = OffersMicroserviceToken(access_token=token)
-    token.save()
+    token.save()  # type: ignore
 
 
 def get_access_token() -> Optional[OffersMicroserviceToken]:
@@ -42,9 +42,7 @@ def load_access_token_from_offers_microservice() -> str:
     :return: access token in str format
     """
     try:
-        response = requests.post(
-            url=settings.BASE_OFFER_MICROSERVICE_API + settings.MICROSERVICE_AUTH_PATH
-        )
+        response = requests.post(url=settings.BASE_OFFER_MICROSERVICE_API + settings.MICROSERVICE_AUTH_PATH)
         if response.status_code == status.HTTP_201_CREATED:
             return response.json()["access_token"]
         else:
@@ -59,7 +57,4 @@ def get_offers_microservice_header():
     Provides Bearer header with access token
     :return: bearer header
     """
-    return {
-        'Bearer': str(get_access_token())
-    }
-
+    return {"Bearer": str(get_access_token())}

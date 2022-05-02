@@ -4,7 +4,6 @@ from v1.product_app.services import token_services
 
 
 class Command(BaseCommand):
-
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS("Get access token command started."))
 

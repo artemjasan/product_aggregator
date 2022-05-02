@@ -1,10 +1,9 @@
-from rest_framework import viewsets, serializers
-from rest_framework import status
-from rest_framework.response import Response
+from rest_framework import serializers, status, viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from .models import Product, Offer
-from .serializers import OfferSerializer, ProductListSerializer, ProductDetailSerializer
+from .models import Offer, Product
+from .serializers import OfferSerializer, ProductDetailSerializer, ProductListSerializer
 from .services import product_services
 
 

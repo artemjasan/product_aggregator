@@ -1,16 +1,17 @@
-import requests
 import logging
 from typing import Final
 
+import requests  # type: ignore
 from django.conf import settings
 from django.db import transaction
 from rest_framework import status
 
 from .token_services import get_offers_microservice_header
 from v1.product_app.custom_exceptions import (
-    UnsupportedOffersMicroserviceResponseStatus, ErrorOffersMicroserviceResponseStatus
+    ErrorOffersMicroserviceResponseStatus,
+    UnsupportedOffersMicroserviceResponseStatus,
 )
-from v1.product_app.models import Product, Offer
+from v1.product_app.models import Offer, Product
 
 logger = logging.getLogger("offers_services")
 
@@ -29,10 +30,11 @@ def get_product_offers(product_id: int) -> requests.Response:
     """
     try:
         response = requests.get(
-            url=settings.BASE_OFFER_MICROSERVICE_API + f"/products/{product_id}" +
-                settings.MICROSERVICE_GET_PRODUCT_OFFERS_PATH,
-            data={'id': product_id},
-            headers=get_offers_microservice_header()
+            url=settings.BASE_OFFER_MICROSERVICE_API
+            + f"/products/{product_id}"
+            + settings.MICROSERVICE_GET_PRODUCT_OFFERS_PATH,
+            data={"id": product_id},
+            headers=get_offers_microservice_header(),
         )
         if response.status_code == status.HTTP_200_OK:
             return response
@@ -64,7 +66,8 @@ def create_product_offers() -> None:
                         price=product_offer.get("price"),
                         items_in_stock=product_offer.get("items_in_stock"),
                         product=product,
-                    ) for product_offer in product_offers
+                    )
+                    for product_offer in product_offers
                 ],
-                ignore_conflicts=True
+                ignore_conflicts=True,
             )

@@ -1,11 +1,10 @@
-import pytest
-
-from pytest_factoryboy import register
 from typing import TypedDict
 
+import pytest
+from pytest_factoryboy import register
 from rest_framework.test import APIClient, APIRequestFactory
-from .factories import ProductFactory, UserFactory, OfferFactory
 
+from .factories import OfferFactory, ProductFactory, UserFactory
 
 register(UserFactory)
 register(ProductFactory)
@@ -19,6 +18,7 @@ def create_user(user_factory: UserFactory):
     Otherwise, returns None.
     If is_staff is True, returns a User with admin permissions.
     """
+
     def make_user(is_registered: bool, is_staff: bool):
         if not is_registered:
             return None
@@ -82,7 +82,7 @@ class _PyTestAuthParametrization(TypedDict):
 
 
 def try_all_authentications_with_codes(
-        anonymous_code: int = 200, registered_code: int = 200, admin_code: int = 200
+    anonymous_code: int = 200, registered_code: int = 200, admin_code: int = 200
 ) -> _PyTestAuthParametrization:
     """
     Used in any test cases, which simply need to check same functionality for different user permissions.
