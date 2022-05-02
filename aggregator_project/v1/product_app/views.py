@@ -1,5 +1,4 @@
 from rest_framework import serializers, status, viewsets
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Offer, Product
@@ -10,16 +9,11 @@ from .services import product_services
 class OffersViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
-    permission_classes = [IsAuthenticated]
 
 
 class ProductsViewSet(viewsets.ModelViewSet):
     queryset = Product.offered_objects.all()
     serializer_class = ProductListSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_serializer_class(self) -> serializers.ModelSerializer:
-        return self.action_serializer_class_mapping.get(self.action, super().get_serializer_class())
 
     action_serializer_class_mapping = {
         "create": ProductListSerializer,
@@ -28,6 +22,9 @@ class ProductsViewSet(viewsets.ModelViewSet):
         "partial_update": ProductDetailSerializer,
         "destroy": ProductDetailSerializer,
     }
+
+    def get_serializer_class(self) -> serializers.ModelSerializer:
+        return self.action_serializer_class_mapping.get(self.action, super().get_serializer_class())
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

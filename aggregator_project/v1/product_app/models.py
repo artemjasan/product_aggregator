@@ -11,8 +11,8 @@ class ProductManager(models.Manager):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=256, unique=True)
-    description = models.TextField(max_length=512)
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(max_length=511)
 
     objects = models.Manager()
     offered_objects = ProductManager()
@@ -25,7 +25,7 @@ class Product(models.Model):
 
 
 class Offer(models.Model):
-    external_ms_id = models.IntegerField(null=True)
+    external_ms_id = models.IntegerField()
     price = models.PositiveIntegerField()
     items_in_stock = models.PositiveIntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="offers")

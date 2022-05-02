@@ -8,7 +8,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Product Aggregator",
         default_version="v1",
-        description="Entry task for Applifting",
+        description="Assigment for Applifting.",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@snippets.local"),
         license=openapi.License(name="BSD License"),

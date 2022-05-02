@@ -25,10 +25,6 @@ MOCKED_OFFERS_DATA_UPDATED: Final = (
     {"id": 100, "price": 1000, "items_in_stock": 1000},
     {"id": 300, "price": 30, "items_in_stock": 30},
 )
-MOCKED_OFFERS_DATA_WRONG: Final = (
-    {"id": 100, "price": 10, "items_in_stock": 10},
-    {"id": 200, "price": -20, "items_in_stock": -20},
-)
 
 
 @responses.activate

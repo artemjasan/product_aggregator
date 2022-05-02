@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "product_aggregator"
 version = "0.1.0"
-description = ""
+description = "Assigment for Applifting."
 authors = ["Artem Jasan <artjasan@gmail.com>"]
 
 [tool.poetry.dependencies]

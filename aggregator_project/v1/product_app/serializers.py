@@ -18,10 +18,6 @@ class ProductListSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "description", "offers"]
 
 
-class ProductDetailSerializer(serializers.ModelSerializer):
+class ProductDetailSerializer(ProductListSerializer):
 
     offers = OfferSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Product
-        fields = ["id", "name", "description", "offers"]
