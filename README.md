@@ -88,7 +88,8 @@ $ docker-compose stop
 $ make test
 ```
 
-## Additional checkers
+## Additional tools
+**pre-commit and other checkers (flake8, mypy, isort, black)**
 > Before starting, you have to install the git hook scripts:
 ```shell
 $ pre-commit install
@@ -98,7 +99,11 @@ launch it manually:
 ```shell
 $ pre-commit run --all-files
 ```
+**Flower**
 
+Flower is a web based tool for monitoring and administrating Celery clusters.
+Visit it at http://0.0.0.0:5555
+> If when you click on an existing worker, you get the message unknown worker, just refresh the page
 
 ## What could also be added to the project
 There are hundreds of things that can be added/updated:
