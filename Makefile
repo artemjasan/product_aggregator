@@ -1,3 +1,6 @@
+# Run full process for the first start
+first-launch: build create migrate up
+
 # Just build the application image
 build:
 	docker-compose build
@@ -29,13 +32,3 @@ makemigrations:
 test:
 	docker-compose run --rm web pytest
 	docker-compose stop
-
-# Run checks
-.PHONY: checks
-checks:
-	docker-compose run --rm --no-deps web ./checks.sh
-
-# Run pre-commit locally on all files
-.PHONY: pre-commit
-pre-commit:
-	docker-compose run --rm --no-deps web pre-commit run --all-files

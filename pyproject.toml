@@ -23,6 +23,12 @@ pytest-factoryboy = "^2.1.0"
 pytest-django = "^4.5.2"
 factory-boy = "^3.2.1"
 responses = "^0.20.0"
+pre-commit = "^2.18.1"
+flake8 = "^4.0.1"
+mypy = "^0.950"
+isort = "^5.10.1"
+types-requests = "^2.27.25"
+drf-yasg = "^1.20.0"
 
 [tool.poetry.dev-dependencies]
 
@@ -33,3 +39,28 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "core.settings"
 pythonpath = [".", "aggregator_project"]
+
+[tool.isort]
+src_paths = "aggregator_project"
+known_local_folder = "aggregator_project/"
+line_length  = 120
+profile = "black"
+
+
+[tool.mypy]
+files = "aggregator_project"
+ignore_missing_imports = true
+exclude = """(?x)^(
+        .*/migrations/.* |
+        .*/tests/.*
+    )$"""
+
+[tool.black]
+line_length = 120
+include = '\.pyi?$'
+exclude = '''
+/(
+  | \.venv
+  | migrations
+)/
+'''
